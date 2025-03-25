@@ -30,7 +30,7 @@ import Audit from "./Audit"
 import GST from "./GST"
 import ROC from "./ROC"
 import NewReqForm from "./NewReqForm"
- 
+
 
 
 const Dashboard = () => {
@@ -120,11 +120,10 @@ const Dashboard = () => {
                           setActiveModule(module.id)
                           if (window.innerWidth < 768) setSidebarOpen(false)
                         }}
-                        className={`w-full flex items-center p-2 rounded-lg transition-all duration-200 ${
-                          activeModule === module.id
-                            ? `bg-gradient-to-r ${module.color} text-white shadow-lg`
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                        }`}
+                        className={`w-full flex items-center p-2 rounded-lg transition-all duration-200 ${activeModule === module.id
+                          ? `bg-gradient-to-r ${module.color} text-white shadow-lg`
+                          : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                          }`}
                       >
                         <span className="flex-shrink-0 mr-3">{module.icon}</span>
                         {isSidebarOpen && <span className="font-medium truncate">{module.name}</span>}
@@ -223,7 +222,7 @@ const Dashboard = () => {
                 <Settings size={24} />
               </motion.button>
             </div> */}
-             <div className="border border-gray-500 text-white p-3 rounded-lg shadow-md">
+            <div className=" text-white p-1 rounded-lg shadow-md">
               <p className="font-semibold">Client: Ajay Kumar</p>
               <p>Valid to: 22/03/2025 - 21/03/2026</p>
               <p>Activation: 12345687</p>
@@ -239,7 +238,7 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className={`text-3xl font-bold mb-6 text-gray-800  ${activeModule === 'income-tax' ? 'text-center' : ''}`}
+              className={`text-3xl font-bold mb-6 text-gray-800 text-center `}
             >
               {modules.find((m) => m.id === activeModule)?.name || "Dashboard"}
             </motion.h2>
@@ -269,8 +268,8 @@ const Dashboard = () => {
                   <ProfileForm />
                 ) : activeModule === "employee" ? (
                   <EmployeeTaskManager />
-                ) :  activeModule === "NewReqForm" ? (
-                    <NewReqForm/>
+                ) : activeModule === "NewReqForm" ? (
+                  <NewReqForm />
                 ) : (
                   <ModuleTable
                     module={activeModule}

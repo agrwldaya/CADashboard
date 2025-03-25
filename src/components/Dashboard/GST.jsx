@@ -28,13 +28,17 @@ const GST = () => {
   const [editingIndex, setEditingIndex] = useState(null);
 
 
-  const [selectedCategory, setSelectedCategory] = useState("all"); // Default: Show All
-  const [showSettings, setShowSettings] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   // function for showing the user selection category
-  const handleCategoryChange = (event) => {
-    setSelectedCategory(event.target.value);
-    setShowSettings(false); // Close settings after selection
+
+  const handleCheckboxChange = (category) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((item) => item !== category)
+        : [...prev, category]
+    );
   };
 
   const categories = [
@@ -128,7 +132,7 @@ const GST = () => {
 
   const handleAddNew = () => {
     setNewRecord({
-      srNo: '',
+      srNo: moduleData.length + 1,
       name: '',
       mobile: '',
       email: '',
@@ -197,9 +201,15 @@ const GST = () => {
   );
 
   const handleDelete = (index) => {
-    if (window.confirm('Are you sure you want to delete this record?')) {
+    if (window.confirm("Are you sure you want to delete this record?")) {
       const updatedData = moduleData.filter((_, i) => i !== index);
-      setModuleData(updatedData);
+
+      const reindexedData = updatedData.map((item, i) => ({
+        ...item,
+        srNo: i + 1,
+      }));
+
+      setModuleData(reindexedData);
       setHasChanges(true);
     }
   };
@@ -301,34 +311,58 @@ const GST = () => {
             </button>
 
 
-            <div className="relative">
+            <div>
+              {/* Settings Button */}
               <button
-                onClick={() => setShowSettings(!showSettings)}
+                onClick={() => setShowForm(true)}
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-700 transition-colors duration-200"
               >
                 <Settings size={16} />
                 <span>Settings</span>
               </button>
 
-              {showSettings && (
-                <div className="absolute bg-white shadow-md rounded-lg p-3  right-0 top-full mt-2 border">
-                  <label className="block text-black font-bold mb-2 px-5">Select Category:</label>
-                  <select
-                    value={selectedCategory}
-                    onChange={handleCategoryChange}
-                    className="w-full bg-gray-100 text-gray-700 px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="all">All Categories</option>
-                    {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category.charAt(0).toUpperCase() + category.slice(1)}
-                      </option>
-                    ))}
-                  </select>
+              {/* Full-Screen Form Modal */}
+              {showForm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                  <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
+                    <h2 className="text-xl font-bold mb-4">Select Categories</h2>
+
+                    {/* Category Grid (3 columns per row) */}
+                    <div className="grid grid-cols-3 gap-4">
+                      {categories.map((category) => (
+                        <label key={category} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => handleCheckboxChange(category)}
+                            className="w-4 h-4"
+                          />
+                          <span className="text-gray-700">
+                            {category.charAt(0).toUpperCase() + category.slice(1)}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex justify-end gap-4 mt-6">
+                      <button
+                        onClick={() => setShowForm(false)}
+                        className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => alert(`Selected: ${selectedCategories.join(", ")}`)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
-
 
             {hasChanges && (
               <button
