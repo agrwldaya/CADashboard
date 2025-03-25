@@ -223,6 +223,11 @@ const Dashboard = () => {
                 <Settings size={24} />
               </motion.button>
             </div> */}
+             <div className="border border-gray-500 text-white p-3 rounded-lg shadow-md">
+              <p className="font-semibold">Client: Ajay Kumar</p>
+              <p>Valid to: 22/03/2025 - 21/03/2026</p>
+              <p>Activation: 12345687</p>
+            </div>
           </div>
         </header>
 
@@ -234,7 +239,7 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="text-3xl font-bold mb-6 text-gray-800"
+              className={`text-3xl font-bold mb-6 text-gray-800  ${activeModule === 'income-tax' ? 'text-center' : ''}`}
             >
               {modules.find((m) => m.id === activeModule)?.name || "Dashboard"}
             </motion.h2>

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
-import { Save, Upload, Download, Search, Edit, Plus, X, Trash2, FileText } from 'lucide-react';
+import { Save, Upload, Download, Search, Edit, Plus, X, Trash2, FileText, Settings } from 'lucide-react';
 
 const Audit = () => {
   const [moduleData, setModuleData] = useState([]);
@@ -26,6 +26,23 @@ const Audit = () => {
   });
   const [editingIndex, setEditingIndex] = useState(null);
 
+
+  const [selectedCategory, setSelectedCategory] = useState("all"); // Default: Show All
+  const [showSettings, setShowSettings] = useState(false);
+
+  // function for showing the user selection category
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+    setShowSettings(false); // Close settings after selection
+  };
+
+  const categories = [
+    "srNo", "name", "mobile", "aadhar", "pan", "assessmentYear",
+    "eFilingStatus", "amount", "feeStatus", "userId", "password",
+    "attachments", "remark"
+  ];
+
+
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -36,7 +53,7 @@ const Audit = () => {
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const rawData = XLSX.utils.sheet_to_json(sheet);
-        
+
         // Map the imported data to match our structure
         const formattedData = rawData.map(item => ({
           srNo: item['Sr.No'] || item['srNo'] || '',
@@ -84,7 +101,7 @@ const Audit = () => {
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Audit');
-    
+
     // Set column widths
     const maxWidth = 20;
     const colWidths = worksheet['!cols'] = [];
@@ -184,7 +201,7 @@ const Audit = () => {
   };
 
   const renderFileInput = (id, value, onChange) => (
-    
+
     <div className="flex flex-col space-y-2">
       <div className="flex items-center">
         <input
@@ -205,7 +222,7 @@ const Audit = () => {
       <div className="flex flex-wrap gap-2">
         {Array.isArray(value) && value.length > 0 ? (
           value.map((file, index) => (
-            <div 
+            <div
               key={index}
               className="flex items-center bg-indigo-50 px-2 py-1 rounded border border-indigo-100 shadow-sm transition-all duration-300 hover:shadow-md"
             >
@@ -235,7 +252,7 @@ const Audit = () => {
   const handleFileChange = (fieldName) => (e) => {
     const files = Array.from(e.target.files);
     const fileNames = files.map(file => file.name);
-    
+
     setNewRecord(prev => ({
       ...prev,
       [fieldName]: [...(prev[fieldName] || []), ...fileNames]
@@ -254,7 +271,7 @@ const Audit = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <button 
+            <button
               onClick={handleAddNew}
               className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-indigo-50 transition-all duration-300 transform flex items-center shadow-md"
             >
@@ -282,6 +299,38 @@ const Audit = () => {
               <Upload size={16} className="mr-2" />
               Export
             </button>
+
+
+            <div className="relative">
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-700 transition-colors duration-200"
+              >
+                <Settings size={16} />
+                <span>Settings</span>
+              </button>
+
+              {showSettings && (
+                <div className="absolute bg-white shadow-md rounded-lg p-3  right-0 top-full mt-2 border">
+                  <label className="block text-black font-bold mb-2 px-5">Select Category:</label>
+                  <select
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                    className="w-full bg-gray-100 text-gray-700 px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="all">All Categories</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+
+
             {hasChanges && (
               <button
                 onClick={handleSaveChanges}
@@ -307,7 +356,7 @@ const Audit = () => {
           </div>
         </div>
       </div>
-      
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white table-auto md:table-fixed">
           <thead>
@@ -344,25 +393,23 @@ const Audit = () => {
                 <td className="py-3 px-6 text-left whitespace-nowrap">{row.pan || '-'}</td>
                 <td className="py-3 px-6 text-left whitespace-nowrap">{row.assessmentYear || '-'}</td>
                 <td className="py-3 px-6 text-left whitespace-nowrap">
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    row.eFilingStatus === 'Filed' 
-                      ? 'bg-green-100 text-green-700' 
-                      : row.eFilingStatus === 'Not Filed'
+                  <span className={`px-2 py-1 rounded-full text-xs ${row.eFilingStatus === 'Filed'
+                    ? 'bg-green-100 text-green-700'
+                    : row.eFilingStatus === 'Not Filed'
                       ? 'bg-red-100 text-red-700'
                       : 'bg-gray-100 text-gray-700'
-                  }`}>
+                    }`}>
                     {row.eFilingStatus || '-'}
                   </span>
                 </td>
                 <td className="py-3 px-6 text-left whitespace-nowrap font-medium">{row.amount || '-'}</td>
                 <td className="py-3 px-6 text-left whitespace-nowrap">
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    row.feeStatus === 'Paid' 
-                      ? 'bg-green-100 text-green-700' 
-                      : row.feeStatus === 'Unpaid'
+                  <span className={`px-2 py-1 rounded-full text-xs ${row.feeStatus === 'Paid'
+                    ? 'bg-green-100 text-green-700'
+                    : row.feeStatus === 'Unpaid'
                       ? 'bg-red-100 text-red-700'
                       : 'bg-gray-100 text-gray-700'
-                  }`}>
+                    }`}>
                     {row.feeStatus || '-'}
                   </span>
                 </td>
@@ -378,15 +425,15 @@ const Audit = () => {
                 <td className="py-3 px-6 text-left whitespace-nowrap">{row.remark || '-'}</td>
                 <td className="py-3 px-6 text-center">
                   <div className="flex items-center justify-center space-x-3">
-                    <button 
-                      onClick={() => handleEdit(index)} 
+                    <button
+                      onClick={() => handleEdit(index)}
                       className="transform hover:text-indigo-600 hover:scale-125 transition-all duration-300"
                       title="Edit Record"
                     >
                       <Edit size={16} />
                     </button>
-                    <button 
-                      onClick={() => handleDelete(index)} 
+                    <button
+                      onClick={() => handleDelete(index)}
                       className="transform hover:text-red-600 hover:scale-125 transition-all duration-300"
                       title="Delete Record"
                     >
@@ -410,25 +457,25 @@ const Audit = () => {
               <h3 className="text-xl font-bold text-indigo-700">
                 {editingIndex !== null ? 'Edit Record' : 'Add New Record'}
               </h3>
-              <button 
-                onClick={handleModalClose} 
+              <button
+                onClick={handleModalClose}
                 className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full p-2 transition-colors duration-300"
               >
                 <X size={24} />
               </button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-            
-               
+
+
 
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Name</label>
                 <input
                   type="text"
                   value={newRecord.name}
-                  onChange={(e) => setNewRecord({...newRecord, name: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, name: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 />
               </div>
@@ -438,7 +485,7 @@ const Audit = () => {
                 <input
                   type="text"
                   value={newRecord.mobile}
-                  onChange={(e) => setNewRecord({...newRecord, mobile: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, mobile: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 />
               </div>
@@ -448,7 +495,7 @@ const Audit = () => {
                 <input
                   type="email"
                   value={newRecord.email}
-                  onChange={(e) => setNewRecord({...newRecord, email: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, email: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 />
               </div>
@@ -458,7 +505,7 @@ const Audit = () => {
                 <input
                   type="text"
                   value={newRecord.aadhar}
-                  onChange={(e) => setNewRecord({...newRecord, aadhar: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, aadhar: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 />
               </div>
@@ -468,7 +515,7 @@ const Audit = () => {
                 <input
                   type="text"
                   value={newRecord.pan}
-                  onChange={(e) => setNewRecord({...newRecord, pan: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, pan: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 />
               </div>
@@ -478,7 +525,7 @@ const Audit = () => {
                 <input
                   type="text"
                   value={newRecord.userId}
-                  onChange={(e) => setNewRecord({...newRecord, userId: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, userId: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 />
               </div>
@@ -488,7 +535,7 @@ const Audit = () => {
                 <input
                   type="text"
                   value={newRecord.password}
-                  onChange={(e) => setNewRecord({...newRecord, password: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, password: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 />
               </div>
@@ -496,7 +543,7 @@ const Audit = () => {
                 <label className="block text-gray-700 text-sm font-bold mb-2">Assessment Year</label>
                 <select
                   value={newRecord.assessmentYear}
-                  onChange={(e) => setNewRecord({...newRecord, assessmentYear: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, assessmentYear: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 >
                   <option value="">Select...</option>
@@ -512,7 +559,7 @@ const Audit = () => {
                 <label className="block text-gray-700 text-sm font-bold mb-2">E-filing Status</label>
                 <select
                   value={newRecord.eFilingStatus}
-                  onChange={(e) => setNewRecord({...newRecord, eFilingStatus: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, eFilingStatus: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 >
                   <option value="">Select...</option>
@@ -527,16 +574,16 @@ const Audit = () => {
                 <input
                   type="number"
                   value={newRecord.amount}
-                  onChange={(e) => setNewRecord({...newRecord, amount: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, amount: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 />
               </div>
-              
+
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Fee Status</label>
                 <select
                   value={newRecord.feeStatus}
-                  onChange={(e) => setNewRecord({...newRecord, feeStatus: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, feeStatus: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 >
                   <option value="">Select...</option>
@@ -545,7 +592,7 @@ const Audit = () => {
                 </select>
               </div>
 
-            
+
 
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Attachments</label>
@@ -556,7 +603,7 @@ const Audit = () => {
                 <label className="block text-gray-700 text-sm font-bold mb-2">Remark</label>
                 <textarea
                   value={newRecord.remark}
-                  onChange={(e) => setNewRecord({...newRecord, remark: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, remark: e.target.value })}
                   className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 h-24"
                 />
               </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { Calculator, TrendingUp, Shield, Award } from 'lucide-react';
+import {  TrendingUp, Shield, Award } from 'lucide-react';
 
 const CAAuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);

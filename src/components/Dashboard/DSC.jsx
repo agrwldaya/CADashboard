@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
-import { Save, Upload, Download, Search, Edit, Plus, X, Trash2 } from 'lucide-react';
+import { Save, Upload, Download, Search, Edit, Plus, X, Trash2, Settings } from 'lucide-react';
 
 const DscManager = () => {
   const columns = [
@@ -23,12 +23,12 @@ const DscManager = () => {
       'Sr.No': '1',
       'Name': 'Vishwas Mishra',
       'Mobile': '9996103258',
-      'Email' : 'temp@gmail.com',
-      'PAN' : 'AH797SGS8',
+      'Email': 'temp@gmail.com',
+      'PAN': 'AH797SGS8',
       'Tax': 'TDS',
       'Issue Date': '2025-02-05',
       'Expiry Date': '2025-02-10',
-      'Amount' : '3000',
+      'Amount': '3000',
       'Fee Status': 'Pending',
       'By': 'Admin',
       'Messages': 'Renewal needed'
@@ -37,12 +37,12 @@ const DscManager = () => {
       'Sr.No': '2',
       'Name': 'Siddhi Singhal',
       'Mobile': '9996103258',
-      'Email' : 'temp@gmail.com',
-      'PAN' : 'AH797SGS8',
+      'Email': 'temp@gmail.com',
+      'PAN': 'AH797SGS8',
       'Tax': 'TDS',
       'Issue Date': '2024-02-03',
       'Expiry Date': "2025-02-09",
-      'Amount' : '3000',
+      'Amount': '3000',
       'Fee Status': 'Pending',
       'By': 'Manager',
       'Messages': 'First time issue'
@@ -51,12 +51,12 @@ const DscManager = () => {
       'Sr.No': '3',
       'Name': 'Anshul Kansal',
       'Mobile': '9996103258',
-      'Email' : 'temp@gmail.com',
-      'PAN' : 'AH797SGS8',
+      'Email': 'temp@gmail.com',
+      'PAN': 'AH797SGS8',
       'Tax': 'TDS',
       'Issue Date': '2025-01-25',
       'Expiry Date': '2025-02-05',
-      'Amount' : '3000',
+      'Amount': '3000',
       'Fee Status': 'Paid',
       'By': 'Supervisor',
       'Messages': 'Regular renewal'
@@ -73,6 +73,22 @@ const DscManager = () => {
   const [showExpiryPopup, setShowExpiryPopup] = useState(false);
   const [expiryMessages, setExpiryMessages] = useState([]);
   const [selectedRecords, setSelectedRecords] = useState([]);
+
+
+  const [selectedCategory, setSelectedCategory] = useState("all"); // Default: Show All
+  const [showSettings, setShowSettings] = useState(false);
+
+  // function for showing the user selection category
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+    setShowSettings(false); // Close settings after selection
+  };
+
+  const categories = [
+    "srNo", "name", "mobile", "Tax", "Pan",
+    "Issue Date", "amount", "feeStatus", "Expiry Date", "By",
+    "Messages"
+  ];
 
   useEffect(() => {
     checkExpiryDates();
@@ -118,10 +134,10 @@ const DscManager = () => {
   };
 
   const handleExport = () => {
-    const dataToExport = selectedRecords.length > 0 
+    const dataToExport = selectedRecords.length > 0
       ? dscData.filter((_, index) => selectedRecords.includes(index))
       : dscData;
-    
+
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'DSC');
@@ -138,7 +154,7 @@ const DscManager = () => {
         },
         body: JSON.stringify(dscData),
       });
-      
+
       if (response.ok) {
         setHasChanges(false);
         alert('Changes saved successfully!');
@@ -151,10 +167,10 @@ const DscManager = () => {
   };
 
   const handleAddNew = () => {
-    const newSrNo = dscData.length > 0 
-      ? Math.max(...dscData.map(item => parseInt(item['Sr.No']))) + 1 
+    const newSrNo = dscData.length > 0
+      ? Math.max(...dscData.map(item => parseInt(item['Sr.No']))) + 1
       : 1;
-    
+
     setNewRecord({
       'Sr.No': newSrNo.toString(),
       'Issue Date': new Date().toISOString().split('T')[0],
@@ -238,7 +254,7 @@ const DscManager = () => {
             ))}
           </select>
         );
-      
+
       case 'number':
         return (
           <input
@@ -248,7 +264,7 @@ const DscManager = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         );
-      
+
       default:
         return (
           <input
@@ -271,7 +287,7 @@ const DscManager = () => {
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button 
+            <button
               onClick={handleAddNew}
               className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors duration-200 flex items-center"
             >
@@ -300,6 +316,37 @@ const DscManager = () => {
               <Upload size={16} className="mr-2" />
               {selectedRecords.length > 0 ? 'Export Selected' : 'Export All'}
             </button>
+
+            <div className="relative">
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-700 transition-colors duration-200"
+              >
+                <Settings size={16} />
+                <span>Settings</span>
+              </button>
+
+              {showSettings && (
+                <div className="absolute bg-white shadow-md rounded-lg p-3  right-0 top-full mt-2 border">
+                  <label className="block text-black font-bold mb-2 px-5">Select Category:</label>
+                  <select
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                    className="w-full bg-gray-100 text-gray-700 px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="all">All Categories</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+
+
             {hasChanges && (
               <button
                 onClick={handleSaveChanges}
@@ -351,13 +398,13 @@ const DscManager = () => {
                 ))}
                 <td className="py-3 px-6 text-center">
                   <div className="flex items-center justify-center space-x-3">
-                    <button 
+                    <button
                       onClick={() => handleEdit(index)}
                       className="transform hover:text-purple-500 hover:scale-110"
                     >
                       <Edit size={16} />
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDelete(index)}
                       className="transform hover:text-red-500 hover:scale-110"
                     >

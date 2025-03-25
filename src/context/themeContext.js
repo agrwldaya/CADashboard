@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 // Get the initial dark mode state from localStorage or default to light mode
 const getInitialMode = () => {
