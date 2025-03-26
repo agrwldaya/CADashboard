@@ -15,8 +15,8 @@ const GST = () => {
     email: '',
     aadhar: '',
     pan: '',
-    gstin: '',
     assessmentYear: '',
+    gstin: '',
     eFilingStatus: '',
     amount: '',
     feeStatus: '',
@@ -36,9 +36,9 @@ const GST = () => {
 
 
   const categories = [
-    "srNo", "name", "mobile", "aadhar", "pan", "assessmentYear",
+    "srNo", "name", "mobile", "aadhar", "pan", "assessmentYear","gstin",
     "eFilingStatus", "amount", "feeStatus", "userId", "password",
-    "attachments", "remark"
+    "attachments", "remark",
   ];
 
   const [displayedColumns, setDisplayedColumns] = useState(categories);
@@ -75,8 +75,8 @@ const GST = () => {
           email: item['Email'] || item['email'] || '',
           aadhar: item['Aadhar'] || item['aadhar'] || '',
           pan: item['PAN'] || item['pan'] || '',
-          gstin: item['GSTIN'] || item['gstin'] || '',
           assessmentYear: item['A/Y'] || item['assessmentYear'] || '',
+          gstin: item['GSTIN'] || item['gstin'] || '',
           eFilingStatus: item['E-filing Status'] || item['eFilingStatus'] || '',
           amount: item['Amount'] || item['amount'] || '',
           feeStatus: item['Fee Status'] || item['feeStatus'] || '',
@@ -502,20 +502,7 @@ const GST = () => {
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">GSTIN</label>
-                <select
-                  value={newRecord.gstin}
-                  onChange={(e) => setNewRecord({ ...newRecord, gstin: e.target.value })}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-                  <option value="">Select GST Type</option>
-                  <option value="GSTR-1">GSTR-1</option>
-                  <option value="GSTR-3B">GSTR-3B</option>
-                  <option value="GSTR-9">GSTR-9</option>
-                  <option value="GSTR-9C">GSTR-9C</option>
-                </select>
-              </div>
+              
 
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">User ID</label>
@@ -550,6 +537,20 @@ const GST = () => {
                   <option value="2022-23">2022-23</option>
                   <option value="2023-24">2023-24</option>
                   <option value="2024-25">2024-25</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">GSTIN</label>
+                <select
+                  value={newRecord.gstin}
+                  onChange={(e) => setNewRecord({ ...newRecord, gstin: e.target.value })}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+                  <option value="">Select GST Type</option>
+                  <option value="GSTR-1">GSTR-1</option>
+                  <option value="GSTR-3B">GSTR-3B</option>
+                  <option value="GSTR-9">GSTR-9</option>
+                  <option value="GSTR-9C">GSTR-9C</option>
                 </select>
               </div>
 

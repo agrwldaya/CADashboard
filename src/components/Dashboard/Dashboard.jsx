@@ -164,7 +164,7 @@ const Dashboard = () => {
       <div className="flex-1 flex flex-col w-full md:w-auto overflow-hidden" onClick={handleContentClick}>
         {/* Mobile Header */}
         <div className="md:hidden fixed top-0 left-0 right-0 bg-gray-900 shadow-md z-10 p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex justify-between">
             <Link to="/">
               <img src={logo || "/placeholder.svg"} alt="Logo" className="h-12 w-auto" />
             </Link>
@@ -196,43 +196,18 @@ const Dashboard = () => {
 
         {/* Desktop Header */}
         <header className="hidden md:block bg-gray-900 shadow-md p-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center ">
+
+            <div>
             <Link to="/">
               <img src={logo || "/placeholder.svg"} alt="Logo" className="h-12 w-auto" />
             </Link>
-            {/* <div className="flex items-center space-x-4">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setNotifications(0)}
-                className="p-2 rounded-lg hover:bg-gray-300 relative"
-              >
-                <Bell size={24} />
-                {notifications > 0 && (
-                  <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                    {notifications}
-                  </span>
-                )}
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="p-2 rounded-lg hover:bg-gray-300"
-              >
-                <Settings size={24} />
-              </motion.button>
-            </div> */}
+            </div>
+            
             <div className=" text-white p-1 rounded-lg shadow-md">
               <p className="font-semibold">Client: Ajay Kumar</p>
               <p>Valid to: 22/03/2025 - 21/03/2026</p>
               <p>Activation: 12345687</p>
-            </div>
-
-            <div>
-
-              {activeModule === "roc" ? (
-                <addbutton/>
-              ) : ""}
             </div>
           </div>
         </header>
