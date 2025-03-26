@@ -1,256 +1,212 @@
-import React, { useState } from 'react';
-import * as XLSX from 'xlsx';
-import { Save, Upload, Download, Search, Edit, Plus, X, Trash2, Settings } from 'lucide-react';
+"use client"
+
+import { useState } from "react"
+import * as XLSX from "xlsx"
+import { Save, Upload, Download, Search, Edit, Plus, X, Trash2, Settings } from "lucide-react"
 
 const ROC = () => {
-  const [moduleData, setModuleData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [hasChanges, setHasChanges] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [moduleData, setModuleData] = useState([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [hasChanges, setHasChanges] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const [newRecord, setNewRecord] = useState({
-    srNo: '',
-    name: '',
-    mobile: '',
-    cin: '',
-    eFilingStatus: '',
-    amount: '',
-    feeStatus: '',
-    userId: '',
-    password: '',
-    remark: '',
-  });
-  const [editingIndex, setEditingIndex] = useState(null);
+    srNo: "",
+    name: "",
+    mobile: "",
+    cin: "",
+    eFilingStatus: "",
+    amount: "",
+    feeStatus: "",
+    userId: "",
+    password: "",
+    remark: "",
+  })
+  const [editingIndex, setEditingIndex] = useState(null)
 
-  const [showForm, setShowForm] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  // Define all available column names
+  const columns = [
+    { name: "srNo", label: "Sr. No" },
+    { name: "name", label: "Name" },
+    { name: "mobile", label: "Mobile" },
+    { name: "cin", label: "CIN" },
+    { name: "eFilingStatus", label: "E-Filing Status" },
+    { name: "amount", label: "Amount" },
+    { name: "feeStatus", label: "Fee Status" },
+    { name: "userId", label: "User ID" },
+    { name: "password", label: "Password" },
+    { name: "remark", label: "Remark" },
+  ]
 
-  // function for showing the user selection category
-  const categories = [
-    "srNo", "name", "mobile", "cin",
-    "eFilingStatus", "amount", "feeStatus", "userId", "password",
-    "remark"
-  ];
-
-
-  const [displayedColumns, setDisplayedColumns] = useState(categories);
-  // function for showing the user selection category
-
-  const handleCheckboxChange = (category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((item) => item !== category)
-        : [...prev, category]
-    );
-  };
-  const handleSaveChanges2 = () => {
-    setDisplayedColumns(selectedCategories);
-    setShowForm(false); // Close modal after saving changes
-  };
+  const [showForm, setShowForm] = useState(false)
+  const [selectedColumns, setSelectedColumns] = useState(columns.map((col) => col.name))
 
   const handleImport = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]
     if (file) {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = (event) => {
-        const binaryStr = event.target.result;
-        const workbook = XLSX.read(binaryStr, { type: 'binary' });
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const rawData = XLSX.utils.sheet_to_json(sheet);
+        const binaryStr = event.target.result
+        const workbook = XLSX.read(binaryStr, { type: "binary" })
+        const sheetName = workbook.SheetNames[0]
+        const sheet = workbook.Sheets[sheetName]
+        const rawData = XLSX.utils.sheet_to_json(sheet)
 
         // Map the imported data to match our structure
-        const formattedData = rawData.map(item => ({
-          srNo: item['Sr.No'] || item['srNo'] || '',
-          name: item['Name'] || item['name'] || '',
-          mobile: item['Mobile'] || item['mobile'] || '',
-          cin: item['CIN'] || item['cin'] || '',
-          eFilingStatus: item['E-filing Status'] || item['eFilingStatus'] || '',
-          amount: item['Amount'] || item['amount'] || '',
-          feeStatus: item['Fee Status'] || item['feeStatus'] || '',
-          userId: item['User ID'] || item['userId'] || '',
-          password: item['Password'] || item['password'] || '',
-          password: item['Remark'] || item['remark'] || '',
-        }));
+        const formattedData = rawData.map((item) => ({
+          srNo: item["Sr.No"] || item["srNo"] || "",
+          name: item["Name"] || item["name"] || "",
+          mobile: item["Mobile"] || item["mobile"] || "",
+          cin: item["CIN"] || item["cin"] || "",
+          eFilingStatus: item["E-filing Status"] || item["eFilingStatus"] || "",
+          amount: item["Amount"] || item["amount"] || "",
+          feeStatus: item["Fee Status"] || item["feeStatus"] || "",
+          userId: item["User ID"] || item["userId"] || "",
+          password: item["Password"] || item["password"] || "",
+          remark: item["Remark"] || item["remark"] || "",
+        }))
 
-        setModuleData(formattedData);
-        setHasChanges(true);
-      };
-      reader.readAsBinaryString(file);
+        setModuleData(formattedData)
+        setHasChanges(true)
+      }
+      reader.readAsBinaryString(file)
     }
-  };
+  }
 
   const handleExport = () => {
     // Format data for export
-    const exportData = moduleData.map(item => ({
-      'Sr.No': item.srNo,
-      'Name': item.name,
-      'Mobile': item.mobile,
-      'CIN': item.cin,
-      'E-filing Status': item.eFilingStatus,
-      'Amount': item.amount,
-      'Fee Status': item.feeStatus,
-      'User ID': item.userId,
-      'Password': item.password,
-      'Remark': item.remark,
-    }));
+    const exportData = moduleData.map((item) => ({
+      "Sr.No": item.srNo,
+      Name: item.name,
+      Mobile: item.mobile,
+      CIN: item.cin,
+      "E-filing Status": item.eFilingStatus,
+      Amount: item.amount,
+      "Fee Status": item.feeStatus,
+      "User ID": item.userId,
+      Password: item.password,
+      Remark: item.remark,
+    }))
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'ROC');
+    const worksheet = XLSX.utils.json_to_sheet(exportData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "ROC")
 
     // Set column widths
-    const maxWidth = 20;
-    const colWidths = worksheet['!cols'] = [];
+    const maxWidth = 20
+    const colWidths = (worksheet["!cols"] = [])
     Object.keys(exportData[0] || {}).forEach(() => {
-      colWidths.push({ wch: maxWidth });
-    });
+      colWidths.push({ wch: maxWidth })
+    })
 
-    XLSX.writeFile(workbook, 'ROC.xlsx');
-  };
+    XLSX.writeFile(workbook, "ROC.xlsx")
+  }
+
+  // Handle column selection in settings
+  const handleColumnCheckboxChange = (columnName) => {
+    setSelectedColumns((prev) => {
+      if (prev.includes(columnName)) {
+        return prev.filter((col) => col !== columnName)
+      } else {
+        return [...prev, columnName]
+      }
+    })
+  }
+
+  // Save column selection settings
+  const handleSaveColumnSettings = () => {
+    // If no columns are selected, select all columns to prevent empty table
+    if (selectedColumns.length === 0) {
+      setSelectedColumns(columns.map((col) => col.name))
+    }
+    setShowForm(false)
+  }
 
   const handleSaveChanges = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       // Simulated save operation
-      console.log('Saving data:', moduleData);
-      setHasChanges(false);
+      console.log("Saving data:", moduleData)
+      setHasChanges(false)
     } catch (error) {
-      console.error('Error saving data:', error);
+      console.error("Error saving data:", error)
     }
-    setIsLoading(false);
-  };
+    setIsLoading(false)
+  }
 
   const handleAddNew = () => {
     setNewRecord({
       srNo: moduleData.length + 1,
-      name: '',
-      mobile: '',
-      cin: '',
-      eFilingStatus: '',
-      amount: '',
-      feeStatus: '',
-      userId: '',
-      password: '',
-      remark: '',
-    });
-    setShowModal(true);
-  };
+      name: "",
+      mobile: "",
+      cin: "",
+      eFilingStatus: "",
+      amount: "",
+      feeStatus: "",
+      userId: "",
+      password: "",
+      remark: "",
+    })
+    setShowModal(true)
+  }
 
   const handleModalClose = () => {
-    setShowModal(false);
+    setShowModal(false)
     setNewRecord({
-      srNo: '',
-      name: '',
-      mobile: '',
-      cin: '',
-      eFilingStatus: '',
-      amount: '',
-      feeStatus: '',
-      userId: '',
-      password: '',
-      remark: '',
-    });
-    setEditingIndex(null);
-  };
+      srNo: "",
+      name: "",
+      mobile: "",
+      cin: "",
+      eFilingStatus: "",
+      amount: "",
+      feeStatus: "",
+      userId: "",
+      password: "",
+      remark: "",
+    })
+    setEditingIndex(null)
+  }
 
   const handleModalSave = () => {
     if (editingIndex !== null) {
       // Edit existing record
-      const updatedData = [...moduleData];
-      updatedData[editingIndex] = newRecord;
-      setModuleData(updatedData);
+      const updatedData = [...moduleData]
+      updatedData[editingIndex] = newRecord
+      setModuleData(updatedData)
     } else {
       // Add new record
-      setModuleData([...moduleData, newRecord]);
+      setModuleData([...moduleData, newRecord])
     }
-    setHasChanges(true);
-    handleModalClose();
-  };
+    setHasChanges(true)
+    handleModalClose()
+  }
 
   const handleEdit = (index) => {
-    setNewRecord(moduleData[index]);
-    setEditingIndex(index);
-    setShowModal(true);
-  };
+    setNewRecord(moduleData[index])
+    setEditingIndex(index)
+    setShowModal(true)
+  }
 
   const filteredData = moduleData.filter((row) =>
-    Object.values(row)
-      .join(' ')
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+    Object.values(row).join(" ").toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
   const handleDelete = (index) => {
     if (window.confirm("Are you sure you want to delete this record?")) {
-      const updatedData = moduleData.filter((_, i) => i !== index);
+      const updatedData = moduleData.filter((_, i) => i !== index)
 
       const reindexedData = updatedData.map((item, i) => ({
         ...item,
         srNo: i + 1,
-      }));
+      }))
 
-      setModuleData(reindexedData);
-      setHasChanges(true);
+      setModuleData(reindexedData)
+      setHasChanges(true)
     }
-  };
+  }
 
-  const renderFileInput = (id, value, onChange) => (
-    <div className="flex flex-col space-y-2">
-      <div className="flex items-center">
-        <input
-          type="file"
-          onChange={onChange}
-          className="hidden"
-          id={id}
-          multiple // Enable multiple file selection
-        />
-        <label
-          htmlFor={id}
-          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 cursor-pointer"
-        >
-          Choose Files
-        </label>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {Array.isArray(value) && value.length > 0 ? (
-          value.map((file, index) => (
-            <div
-              key={index}
-              className="flex items-center bg-gray-100 px-2 py-1 rounded"
-            >
-              <span className="text-sm text-gray-600">{file}</span>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  const newFiles = value.filter((_, i) => i !== index);
-                  setNewRecord(prev => ({
-                    ...prev,
-                    [id.replace('file-', '')]: newFiles
-                  }));
-                }}
-                className="ml-2 text-red-500 hover:text-red-700"
-              >
-                <X size={14} />
-              </button>
-            </div>
-          ))
-        ) : (
-          <span className="text-sm text-gray-500">No files chosen</span>
-        )}
-      </div>
-    </div>
-  );
-
-  const handleFileChange = (fieldName) => (e) => {
-    const files = Array.from(e.target.files);
-    const fileNames = files.map(file => file.name);
-
-    setNewRecord(prev => ({
-      ...prev,
-      [fieldName]: [...(prev[fieldName] || []), ...fileNames]
-    }));
-  };
+  // Filter columns based on user selection
+  const visibleColumns = columns.filter((column) => selectedColumns.includes(column.name))
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -269,13 +225,8 @@ const ROC = () => {
               <Plus size={16} className="mr-2" />
               Add New
             </button>
-            <input
-              type="file"
-              accept=".xlsx,.xls"
-              onChange={handleImport}
-              className="hidden"
-              id="fileInput"
-            />
+            
+            <input type="file" accept=".xlsx,.xls" onChange={handleImport} className="hidden" id="fileInput" />
             <label
               htmlFor="fileInput"
               className="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors duration-200 cursor-pointer flex items-center"
@@ -291,59 +242,14 @@ const ROC = () => {
               Export
             </button>
 
-
-            <div>
-              {/* Settings Button */}
-              <button
-                onClick={() => setShowForm(true)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-700 transition-colors duration-200"
-              >
-                <Settings size={16} />
-                <span>Settings</span>
-              </button>
-
-              {/* Full-Screen Form Modal */}
-              {showForm && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-                  <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
-                    <h2 className="text-xl font-bold mb-4">Select Categories</h2>
-
-                    {/* Category Grid (3 columns per row) */}
-                    <div className="grid grid-cols-3 gap-4">
-                      {categories.map((category) => (
-                        <label key={category} className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={selectedCategories.includes(category)}
-                            onChange={() => handleCheckboxChange(category)}
-                            className="w-4 h-4"
-                          />
-                          <span className="text-gray-700">
-                            {category.charAt(0).toUpperCase() + category.slice(1)}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="flex justify-end gap-4 mt-6">
-                      <button
-                        onClick={() => setShowForm(false)}
-                        className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleSaveChanges2}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Settings Button */}
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-700 transition-colors duration-200"
+            >
+              <Settings size={16} />
+              <span>Settings</span>
+            </button>
 
             {hasChanges && (
               <button
@@ -355,6 +261,7 @@ const ROC = () => {
                 Save
               </button>
             )}
+
           </div>
         </div>
         <div className="w-full md:w-1/2">
@@ -371,13 +278,55 @@ const ROC = () => {
         </div>
       </div>
 
+      {/* Settings Modal for Column Selection */}
+      {showForm && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
+            <h2 className="text-xl font-bold mb-4">Select Columns to Display</h2>
+
+            {/* Column Selection Grid */}
+            <div className="grid grid-cols-3 gap-4">
+              {columns.map((column) => (
+                <label key={column.name} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedColumns.includes(column.name)}
+                    onChange={() => handleColumnCheckboxChange(column.name)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-gray-700">{column.label}</span>
+                </label>
+              ))}
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-end gap-4 mt-6">
+              <button
+                onClick={() => setShowForm(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveColumnSettings}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="overflow-x-auto mt-4">
         <table className="min-w-full bg-white table-auto md:table-fixed">
           <thead>
             <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">Select</th>
-              {displayedColumns.map((column) => (
-                <th key={column} className="py-3 px-6 text-left">{column}</th>
+              {visibleColumns.map((column) => (
+                <th key={column.name} className="py-3 px-6 text-left">
+                  {column.label}
+                </th>
               ))}
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
@@ -388,17 +337,23 @@ const ROC = () => {
                 <td className="py-3 px-6 text-left whitespace-nowrap">
                   <input type="checkbox" className="form-checkbox h-5 w-5 text-green-600" />
                 </td>
-                {displayedColumns.map((column) => (
-                  <td key={column} className="py-3 px-6 text-left whitespace-nowrap">
-                    {row[column] || '-'}
+                {visibleColumns.map((column) => (
+                  <td key={column.name} className="py-3 px-6 text-left whitespace-nowrap">
+                    {row[column.name] || "-"}
                   </td>
                 ))}
                 <td className="py-3 px-6 text-center">
                   <div className="flex items-center justify-center space-x-3">
-                    <button onClick={() => handleEdit(index)} className="transform hover:text-purple-500 hover:scale-110">
+                    <button
+                      onClick={() => handleEdit(index)}
+                      className="transform hover:text-purple-500 hover:scale-110"
+                    >
                       <Edit size={16} />
                     </button>
-                    <button onClick={() => handleDelete(index)} className="transform hover:text-red-500 hover:scale-110">
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="transform hover:text-red-500 hover:scale-110"
+                    >
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -415,14 +370,13 @@ const ROC = () => {
           <div className="bg-white p-4 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                {editingIndex !== null ? 'Edit Record' : 'Add New Record'}
+                {editingIndex !== null ? "Edit Record" : "Add New Record"}
               </h3>
               <button onClick={handleModalClose} className="text-gray-400 hover:text-gray-600">
                 <X size={24} />
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Name</label>
                 <input
@@ -447,8 +401,8 @@ const ROC = () => {
                 <label className="block text-gray-700 text-sm font-bold mb-2">CIN</label>
                 <input
                   type="text"
-                  value={newRecord.email}
-                  onChange={(e) => setNewRecord({ ...newRecord, email: e.target.value })}
+                  value={newRecord.cin}
+                  onChange={(e) => setNewRecord({ ...newRecord, cin: e.target.value })}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
               </div>
@@ -509,9 +463,6 @@ const ROC = () => {
                 </select>
               </div>
 
-
-
-
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Remark</label>
                 <input
@@ -533,8 +484,10 @@ const ROC = () => {
           </div>
         </div>
       )}
-    </div>
-  );
-};
 
-export default ROC;
+    </div>
+  )
+}
+
+export default ROC
+

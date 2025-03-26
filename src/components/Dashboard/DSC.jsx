@@ -138,21 +138,10 @@ const DscManager = () => {
   const handleSaveChanges = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch("/api/dsc/saveData", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dscData),
-      })
-
-      if (response.ok) {
-        setHasChanges(false)
-        alert("Changes saved successfully!")
-      }
+       
+      setHasChanges(false)
     } catch (error) {
       console.error("Error saving data:", error)
-      alert("Error saving changes")
     }
     setIsLoading(false)
   }
