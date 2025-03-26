@@ -332,7 +332,7 @@ const GST = () => {
 
               {/* Full-Screen Form Modal */}
               {showForm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
                   <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
                     <h2 className="text-xl font-bold mb-4">Select Categories</h2>
 
