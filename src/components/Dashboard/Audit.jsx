@@ -27,11 +27,17 @@ const Audit = () => {
   const [editingIndex, setEditingIndex] = useState(null);
 
 
-   const [showForm, setShowForm] = useState(false);
-    const [selectedCategories, setSelectedCategories] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
+  const categories = [
+    "srNo", "name", "mobile", "aadhar", "pan", "assessmentYear",
+    "eFilingStatus", "amount", "feeStatus", "userId", "password",
+    "attachments", "remark"
+  ];
+  const [displayedColumns, setDisplayedColumns] = useState(categories);
   // function for showing the user selection category
- 
+
   const handleCheckboxChange = (category) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
@@ -39,12 +45,11 @@ const Audit = () => {
         : [...prev, category]
     );
   };
-
-  const categories = [
-    "srNo", "name", "mobile", "aadhar", "pan", "assessmentYear",
-    "eFilingStatus", "amount", "feeStatus", "userId", "password",
-    "attachments", "remark"
-  ];
+  
+  const handleSaveChanges2 = () => {
+    setDisplayedColumns(selectedCategories);
+    setShowForm(false); // Close modal after saving changes
+  };
 
 
   const handleImport = (e) => {
@@ -353,7 +358,7 @@ const Audit = () => {
                         Cancel
                       </button>
                       <button
-                        onClick={() => alert(`Selected: ${selectedCategories.join(", ")}`)}
+                        onClick={handleSaveChanges2}
                         className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                       >
                         Save
@@ -392,86 +397,34 @@ const Audit = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mt-4">
         <table className="min-w-full bg-white table-auto md:table-fixed">
           <thead>
-            <tr className="bg-gradient-to-r from-gray-100 to-blue-50 text-gray-700 uppercase text-sm leading-normal">
+            <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">Select</th>
-              <th className="py-3 px-6 text-left">Sr.No</th>
-              <th className="py-3 px-6 text-left">Name</th>
-              <th className="py-3 px-6 text-left">Mobile</th>
-              <th className="py-3 px-6 text-left">Email</th>
-              <th className="py-3 px-6 text-left">Aadhar</th>
-              <th className="py-3 px-6 text-left">PAN</th>
-              <th className="py-3 px-6 text-left">A/Y</th>
-              <th className="py-3 px-6 text-left">E-filing Status</th>
-              <th className="py-3 px-6 text-left">Amount</th>
-              <th className="py-3 px-6 text-left">Fee Status</th>
-              <th className="py-3 px-6 text-left">User ID</th>
-              <th className="py-3 px-6 text-left">Password</th>
-              <th className="py-3 px-6 text-left">Attachments</th>
-              <th className="py-3 px-6 text-left">Remark</th>
+              {displayedColumns.map((column) => (
+                <th key={column} className="py-3 px-6 text-left">{column}</th>
+              ))}
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-gray-600 text-sm">
+          <tbody className="text-gray-600 text-sm font-light">
             {filteredData.map((row, index) => (
-              <tr key={index} className="border-b border-gray-200 hover:bg-blue-50 transition-colors duration-150">
+              <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
                 <td className="py-3 px-6 text-left whitespace-nowrap">
-                  <input type="checkbox" className="form-checkbox h-5 w-5 text-indigo-600 rounded transition duration-150 ease-in-out" />
+                  <input type="checkbox" className="form-checkbox h-5 w-5 text-green-600" />
                 </td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.srNo || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap font-medium">{row.name || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.mobile || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.email || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.aadhar || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.pan || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.assessmentYear || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">
-                  <span className={`px-2 py-1 rounded-full text-xs ${row.eFilingStatus === 'Filed'
-                    ? 'bg-green-100 text-green-700'
-                    : row.eFilingStatus === 'Not Filed'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-gray-100 text-gray-700'
-                    }`}>
-                    {row.eFilingStatus || '-'}
-                  </span>
-                </td>
-                <td className="py-3 px-6 text-left whitespace-nowrap font-medium">{row.amount || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">
-                  <span className={`px-2 py-1 rounded-full text-xs ${row.feeStatus === 'Paid'
-                    ? 'bg-green-100 text-green-700'
-                    : row.feeStatus === 'Unpaid'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-gray-100 text-gray-700'
-                    }`}>
-                    {row.feeStatus || '-'}
-                  </span>
-                </td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.userId || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.password || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">
-                  {row.attachments ? (
-                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
-                      Files Available
-                    </span>
-                  ) : '-'}
-                </td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.remark || '-'}</td>
+                {displayedColumns.map((column) => (
+                  <td key={column} className="py-3 px-6 text-left whitespace-nowrap">
+                    {row[column] || '-'}
+                  </td>
+                ))}
                 <td className="py-3 px-6 text-center">
                   <div className="flex items-center justify-center space-x-3">
-                    <button
-                      onClick={() => handleEdit(index)}
-                      className="transform hover:text-indigo-600 hover:scale-125 transition-all duration-300"
-                      title="Edit Record"
-                    >
+                    <button onClick={() => handleEdit(index)} className="transform hover:text-purple-500 hover:scale-110">
                       <Edit size={16} />
                     </button>
-                    <button
-                      onClick={() => handleDelete(index)}
-                      className="transform hover:text-red-600 hover:scale-125 transition-all duration-300"
-                      title="Delete Record"
-                    >
+                    <button onClick={() => handleDelete(index)} className="transform hover:text-red-500 hover:scale-110">
                       <Trash2 size={16} />
                     </button>
                   </div>

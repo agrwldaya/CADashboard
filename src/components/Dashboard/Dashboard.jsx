@@ -28,10 +28,10 @@ import IncomeTax from "./IncomeTax"
 import TDS from "./TDS"
 import Audit from "./Audit"
 import GST from "./GST"
-import ROC from "./ROC"
+import  ROC  from "./ROC"
 import NewReqForm from "./NewReqForm"
-
-
+import Main from "./Addnew/Main"
+import { addbutton } from "./ROC"
 
 const Dashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true)
@@ -226,6 +226,13 @@ const Dashboard = () => {
               <p className="font-semibold">Client: Ajay Kumar</p>
               <p>Valid to: 22/03/2025 - 21/03/2026</p>
               <p>Activation: 12345687</p>
+            </div>
+
+            <div>
+
+              {activeModule === "roc" ? (
+                <addbutton/>
+              ) : ""}
             </div>
           </div>
         </header>

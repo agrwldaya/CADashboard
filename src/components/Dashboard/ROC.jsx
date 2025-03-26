@@ -26,6 +26,15 @@ const ROC = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   // function for showing the user selection category
+  const categories = [
+    "srNo", "name", "mobile", "cin",
+    "eFilingStatus", "amount", "feeStatus", "userId", "password",
+    "remark"
+  ];
+
+
+  const [displayedColumns, setDisplayedColumns] = useState(categories);
+  // function for showing the user selection category
 
   const handleCheckboxChange = (category) => {
     setSelectedCategories((prev) =>
@@ -34,12 +43,10 @@ const ROC = () => {
         : [...prev, category]
     );
   };
-
-  const categories = [
-    "srNo", "name", "mobile", "cin",
-    "eFilingStatus", "amount", "feeStatus", "userId", "password",
-    "remark"
-  ];
+  const handleSaveChanges2 = () => {
+    setDisplayedColumns(selectedCategories);
+    setShowForm(false); // Close modal after saving changes
+  };
 
   const handleImport = (e) => {
     const file = e.target.files[0];
@@ -327,7 +334,7 @@ const ROC = () => {
                         Cancel
                       </button>
                       <button
-                        onClick={() => alert(`Selected: ${selectedCategories.join(", ")}`)}
+                        onClick={handleSaveChanges2}
                         className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                       >
                         Save
@@ -364,21 +371,14 @@ const ROC = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mt-4">
         <table className="min-w-full bg-white table-auto md:table-fixed">
           <thead>
             <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">Select</th>
-              <th className="py-3 px-6 text-left">Sr.No</th>
-              <th className="py-3 px-6 text-left">Name</th>
-              <th className="py-3 px-6 text-left">Mobile</th>
-              <th className="py-3 px-6 text-left">CIN</th>
-              <th className="py-3 px-6 text-left">E-filing Status</th>
-              <th className="py-3 px-6 text-left">Amount</th>
-              <th className="py-3 px-6 text-left">Fee Status</th>
-              <th className="py-3 px-6 text-left">User ID</th>
-              <th className="py-3 px-6 text-left">Password</th>
-              <th className="py-3 px-6 text-left">Remark</th>
+              {displayedColumns.map((column) => (
+                <th key={column} className="py-3 px-6 text-left">{column}</th>
+              ))}
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
           </thead>
@@ -388,16 +388,11 @@ const ROC = () => {
                 <td className="py-3 px-6 text-left whitespace-nowrap">
                   <input type="checkbox" className="form-checkbox h-5 w-5 text-green-600" />
                 </td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.srNo || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.name || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.mobile || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.cin || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.eFilingStatus || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.amount || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.feeStatus || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.userId || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.password || '-'}</td>
-                <td className="py-3 px-6 text-left whitespace-nowrap">{row.remark || '-'}</td>
+                {displayedColumns.map((column) => (
+                  <td key={column} className="py-3 px-6 text-left whitespace-nowrap">
+                    {row[column] || '-'}
+                  </td>
+                ))}
                 <td className="py-3 px-6 text-center">
                   <div className="flex items-center justify-center space-x-3">
                     <button onClick={() => handleEdit(index)} className="transform hover:text-purple-500 hover:scale-110">

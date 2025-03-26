@@ -77,21 +77,39 @@ const DscManager = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [filteredDatas, setFilteredDatas] = useState(dscData);
 
   // function for showing the user selection category
 
   const handleCheckboxChange2 = (category) => {
     setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((item) => item !== category)
-        : [...prev, category]
+      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
     );
   };
+
+
+  const applyCategoryFilter = () => {
+    const newFilteredData = dscData.filter((row) =>
+      selectedCategories.length === 0 || selectedCategories.includes(row.category)
+    );
+    setFilteredDatas(newFilteredData); // Update UI
+    setShowForm(false); // Close modal
+  };
+
+
   const categories = [
     "srNo", "name", "mobile", "Tax", "Pan",
     "Issue Date", "amount", "feeStatus", "Expiry Date", "By",
     "Messages"
   ];
+
+
+  const [displayedColumns, setDisplayedColumns] = useState(categories);
+  const handleSaveChanges2 = () => {
+    setDisplayedColumns(selectedCategories);
+    setShowForm(false); // Close modal after saving changes
+  };
+
 
   useEffect(() => {
     checkExpiryDates();
@@ -362,7 +380,7 @@ const DscManager = () => {
                         Cancel
                       </button>
                       <button
-                        onClick={() => alert(`Selected: ${selectedCategories.join(", ")}`)}
+                        onClick={applyCategoryFilter}
                         className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                       >
                         Save
@@ -400,51 +418,47 @@ const DscManager = () => {
           </div>
         </div>
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mt-4">
         <table className="min-w-full bg-white table-auto md:table-fixed">
           <thead>
             <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">Select</th>
               {columns.map((column) => (
-                <th key={column.name} className="py-3 px-6 text-left">
-                  {column.name}
-                </th>
+                <th key={column.name} className="py-3 px-6 text-left">{column.name}</th>
               ))}
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
-            {filteredData.map((row, index) => (
-              <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
-                <td className="py-3 px-6 text-left whitespace-nowrap">
-                  <input type="checkbox" className="form-checkbox h-5 w-5 text-blue-600" />
-                </td>
-                {columns.map((column) => (
-                  <td key={column.name} className="py-3 px-6 text-left whitespace-nowrap">
-                    {row[column.name] || '-'}
+            {filteredDatas
+              .filter((row) => selectedCategories.length === 0 || selectedCategories.includes(row.category))
+              .map((row, index) => (
+                <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+                  <td className="py-3 px-6 text-left whitespace-nowrap">
+                    <input type="checkbox" className="form-checkbox h-5 w-5 text-blue-600" />
                   </td>
-                ))}
-                <td className="py-3 px-6 text-center">
-                  <div className="flex items-center justify-center space-x-3">
-                    <button
-                      onClick={() => handleEdit(index)}
-                      className="transform hover:text-purple-500 hover:scale-110"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(index)}
-                      className="transform hover:text-red-500 hover:scale-110"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  {columns.map((column) => (
+                    <td key={column.name} className="py-3 px-6 text-left whitespace-nowrap">
+                      {row[column.name] || '-'}
+                    </td>
+                  ))}
+                  <td className="py-3 px-6 text-center">
+                    <div className="flex items-center justify-center space-x-3">
+                      <button onClick={() => handleEdit(index)} className="transform hover:text-purple-500 hover:scale-110">
+                        <Edit size={16} />
+                      </button>
+                      <button onClick={() => handleDelete(index)} className="transform hover:text-red-500 hover:scale-110">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
           </tbody>
         </table>
       </div>
+
 
       {/* Modal for Add/Edit */}
       {showModal && (
@@ -520,4 +534,3 @@ const DscManager = () => {
 };
 
 export default DscManager;
-
