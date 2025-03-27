@@ -10,11 +10,10 @@ import {
   Key,
   User,
   LogOut,
-  Bell,
-  Settings,
   Menu,
   DollarSign,
   FormInput,
+  X,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
@@ -28,15 +27,13 @@ import IncomeTax from "./IncomeTax"
 import TDS from "./TDS"
 import Audit from "./Audit"
 import GST from "./GST"
-import  ROC  from "./ROC"
+import ROC from "./ROC"
 import NewReqForm from "./NewReqForm"
-import Main from "./Addnew/Main"
-import { addbutton } from "./ROC"
 
 const Dashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true)
   const [activeModule, setActiveModule] = useState("income-tax")
-  const [notifications, setNotifications] = useState(3)
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false)
 
   const modules = [
     { id: "income-tax", name: "Income Tax", icon: <Calculator />, color: "from-blue-600 to-blue-800" },
@@ -47,7 +44,6 @@ const Dashboard = () => {
     { id: "task", name: "Task Manager", icon: <ClipboardList />, color: "from-blue-600 to-blue-800" },
     { id: "dsc", name: "DSC Manager", icon: <Key />, color: "from-blue-600 to-blue-800" },
     { id: "employee", name: "Employee Task Manager", icon: <User />, color: "from-blue-600 to-blue-800" },
-    { id: "NewReqForm", name: "New Request Form", icon: <FormInput />, color: "from-blue-600 to-blue-800" },
   ]
 
   const toggleSidebar = () => {
@@ -70,6 +66,52 @@ const Dashboard = () => {
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
   }, [])
+
+  const ClientDetailsCard = () => {
+    return (
+      <div className="gap-4 bg-gray-700 p-2 rounded-sm">
+        <div className="flex justify-between items-center ">
+          <h3 className="text-xl font-bold text-blue-300">Client Profile</h3>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm text-white"><span className="font-semibold text-blue-200">Name:</span> Ajay Kumar</p>
+          <p className="text-sm text-white"><span className="font-semibold text-blue-200">Validity:</span> 22/03/2025 - 21/03/2026</p>
+          <p className="text-sm text-white"><span className="font-semibold text-blue-200">Activation Code:</span> 12345687</p>
+        </div>
+      </div>
+    )
+  }
+
+  const RequestModal = () => {
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+        >
+          <div className="flex justify-between items-center p-4 border-b">
+            <h2 className="text-2xl font-bold text-gray-800">New Request</h2>
+            <button 
+              onClick={() => setIsRequestModalOpen(false)}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <X size={24} />
+            </button>
+          </div>
+          <div className="p-4">
+            <NewReqForm />
+          </div>
+        </motion.div>
+      </motion.div>
+    )
+  }
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100 font-sans">
@@ -169,19 +211,6 @@ const Dashboard = () => {
               <img src={logo || "/placeholder.svg"} alt="Logo" className="h-12 w-auto" />
             </Link>
             <div className="flex items-center">
-              {/* <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setNotifications(0)}
-                className="p-2 rounded-lg hover:bg-gray-300 mr-2 relative"
-              >
-                <Bell size={24} />
-                {notifications > 0 && (
-                  <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                    {notifications}
-                  </span>
-                )}
-              </motion.button> */}
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -195,19 +224,22 @@ const Dashboard = () => {
         </div>
 
         {/* Desktop Header */}
-        <header className="hidden md:block bg-gray-900 shadow-md p-4">
-          <div className="flex justify-between items-center ">
-
-            <div>
+        <header className="hidden md:block bg-gradient-to-r from-gray-900 to-gray-800 shadow-md p-4">
+          <div className="flex justify-between items-center max-w-7xl mx-auto">
             <Link to="/">
               <img src={logo || "/placeholder.svg"} alt="Logo" className="h-12 w-auto" />
             </Link>
-            </div>
             
-            <div className=" text-white p-1 rounded-lg shadow-md">
-              <p className="font-semibold">Client: Ajay Kumar</p>
-              <p>Valid to: 22/03/2025 - 21/03/2026</p>
-              <p>Activation: 12345687</p>
+            <div className="flex justify-center items-center gap-6">
+              {/* client details in the cart */}
+              <ClientDetailsCard />
+              <button
+                onClick={() => setIsRequestModalOpen(true)}
+                className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors duration-300 flex items-center space-x-2 shadow-md"
+              >
+               
+                <span>New Request</span>
+              </button>
             </div>
           </div>
         </header>
@@ -250,8 +282,6 @@ const Dashboard = () => {
                   <ProfileForm />
                 ) : activeModule === "employee" ? (
                   <EmployeeTaskManager />
-                ) : activeModule === "NewReqForm" ? (
-                  <NewReqForm />
                 ) : (
                   <ModuleTable
                     module={activeModule}
@@ -263,9 +293,13 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Request Modal */}
+      <AnimatePresence>
+        {isRequestModalOpen && <RequestModal />}
+      </AnimatePresence>
     </div>
   )
 }
 
 export default Dashboard
-

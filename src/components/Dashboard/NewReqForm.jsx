@@ -1,10 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { CheckCircle, AlertCircle } from "lucide-react"
+import { CheckCircle, AlertCircle, MapPin, User, Mail, Phone, Building2 ,RefreshCw} from "lucide-react"
 
 export default function RequestForm() {
-  // Form state
   const [formData, setFormData] = useState({
     contactPerson: "",
     firmName: "",
@@ -16,7 +15,6 @@ export default function RequestForm() {
     email: "",
   })
 
-  //states
   const states = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
     "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
@@ -26,7 +24,6 @@ export default function RequestForm() {
     "Uttar Pradesh", "Uttarakhand", "West Bengal"
   ];
 
-  // Validation state
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
 
@@ -84,17 +81,23 @@ export default function RequestForm() {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+    <div className="w-full max-w-4xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden">
       {/* Form header */}
-      <div className="bg-[#0066a1] text-white px-6 py-4">
-        <h2 className="text-xl font-semibold">New Request Form</h2>
+      <div className="bg-gradient-to-r from-blue-800 to-blue-900 text-white px-6 py-5 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+           
+          <h2 className="text-2xl  font-bold">New Request Form</h2>
+        </div>
+        <div className="text-sm text-blue-200 bg-blue-700/30 px-3 py-1 rounded-full">
+          Request ID: {Math.floor(Math.random() * 10000)}
+        </div>
       </div>
 
       {submitted ? (
-        <div className="p-8 text-center">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h3 className="text-2xl font-semibold mb-2">Request Submitted Successfully!</h3>
-          <p className="text-gray-600 mb-6">Thank you for your submission. We will get back to you shortly.</p>
+        <div className="p-12 text-center bg-gray-50">
+          <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6 animate-bounce" />
+          <h3 className="text-3xl font-bold mb-4 text-gray-800">Request Submitted Successfully!</h3>
+          <p className="text-gray-600 mb-8 text-lg">Thank you for your submission. Our team will review and get back to you shortly.</p>
           <button
             onClick={() => {
               setFormData({
@@ -109,33 +112,36 @@ export default function RequestForm() {
               })
               setSubmitted(false)
             }}
-            className="bg-[#0066a1] text-white px-6 py-2 rounded-md hover:bg-[#00558c] transition-colors"
+            className="bg-blue-700 text-white px-8 py-3 rounded-lg hover:bg-blue-800 transition-colors duration-300 shadow-md flex items-center mx-auto space-x-2"
           >
+            <RefreshCw className="w-5 h-5 mr-2" />
             Submit Another Request
           </button>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="p-0">
           {/* Client Details Section */}
-          <div className="border-b border-gray-200 py-2 px-6">
-            <h3 className="text-[#cc0000] text-lg font-medium">Client Details</h3>
+          <div className="bg-blue-50 border-b border-blue-100 py-4 px-6 flex items-center">
+            <User className="w-6 h-6 text-blue-700 mr-3" />
+            <h3 className="text-xl font-semibold border-gray-200 hover:bg-gray-100">Client Details</h3>
           </div>
 
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-2">
-                <label className="block mb-1 font-medium">
-                  Contact Person <span className="text-[#cc0000]">*</span>
+                <label className="block mb-2 font-semibold text-gray-700 flex items-center">
+                  <User className="w-5 h-5 mr-2 text-blue-600" />
+                  Contact Person <span className="text-red-500 ml-1">*</span>
                 </label>
                 <input
                   type="text"
                   name="contactPerson"
                   value={formData.contactPerson}
                   onChange={handleChange}
-                  className={`w-full p-2 border ${errors.contactPerson ? "border-[#cc0000]" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[#0066a1]`}
+                  className={`w-full p-3 border ${errors.contactPerson ? "border-red-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
                 />
                 {errors.contactPerson && (
-                  <p className="text-[#cc0000] text-sm mt-1 flex items-center">
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.contactPerson}
                   </p>
@@ -143,57 +149,65 @@ export default function RequestForm() {
               </div>
 
               <div>
-                <label className="block mb-1 font-medium">Firm Name</label>
+                <label className="block mb-2 font-semibold text-gray-700 flex items-center">
+                  <Building2 className="w-5 h-5 mr-2 text-blue-600" />
+                  Firm Name
+                </label>
                 <input
                   type="text"
                   name="firmName"
                   value={formData.firmName}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0066a1]"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
             </div>
           </div>
 
           {/* Correspondence Address Section */}
-          <div className="mx-6 mb-6 border border-gray-200 rounded-md">
-            <div className="border-b border-gray-200 py-2 px-4">
-              <h3 className="text-[#cc0000] text-lg font-medium">Correspondence Address</h3>
+          <div className="mx-6 mb-6 border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-blue-50 border-b border-gray-200 py-4 px-6 flex items-center">
+              <MapPin className="w-6 h-6 text-blue-700 mr-3" />
+              <h3 className="text-xl font-semibold text-blue-800">Correspondence Address</h3>
             </div>
 
-            <div className="p-4 space-y-4">
+            <div className="p-6 space-y-6">
+              {/* Rest of the form remains the same, with minor styling updates */}
               <div>
-                <label className="block mb-1 font-medium">
-                  Address(C) <span className="text-[#cc0000]">*</span>
+                <label className="block mb-2 font-semibold text-gray-700 flex items-center">
+                  <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                  Address(C) <span className="text-red-500 ml-1">*</span>
                 </label>
                 <textarea
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  className={`w-full p-2 border ${errors.address ? "border-[#cc0000]" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[#0066a1] h-24`}
+                  className={`w-full p-3 border ${errors.address ? "border-red-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all h-24`}
                 ></textarea>
                 {errors.address && (
-                  <p className="text-[#cc0000] text-sm mt-1 flex items-center">
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.address}
                   </p>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Other fields with similar styling */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block mb-1 font-medium">
-                    City(C) <span className="text-[#cc0000]">*</span>
+                  <label className="block mb-2 font-semibold text-gray-700 flex items-center">
+                    <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                    City(C) <span className="text-red-500 ml-1">*</span>
                   </label>
                   <input
                     type="text"
                     name="city"
                     value={formData.city}
                     onChange={handleChange}
-                    className={`w-full p-2 border ${errors.city ? "border-[#cc0000]" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[#0066a1]`}
+                    className={`w-full p-3 border ${errors.city ? "border-red-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
                   />
                   {errors.city && (
-                    <p className="text-[#cc0000] text-sm mt-1 flex items-center">
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
                       <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.city}
                     </p>
@@ -201,14 +215,15 @@ export default function RequestForm() {
                 </div>
 
                 <div>
-                  <label className="block mb-1 font-medium">
-                    State(C) <span className="text-[#cc0000]">*</span>
+                  <label className="block mb-2 font-semibold text-gray-700 flex items-center">
+                    <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                    State(C) <span className="text-red-500 ml-1">*</span>
                   </label>
                   <select
                     name="state"
                     value={formData.state}
                     onChange={handleChange}
-                    className={`w-full p-2 border ${errors.state ? "border-[#cc0000]" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[#0066a1] h-[42px]`}
+                    className={`w-full p-3 border ${errors.state ? "border-red-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
                   >
                     <option value="">-Select-</option>
                     {states.map((state) => (
@@ -218,7 +233,7 @@ export default function RequestForm() {
                     ))}
                   </select>
                   {errors.state && (
-                    <p className="text-[#cc0000] text-sm mt-1 flex items-center">
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
                       <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.state}
                     </p>
@@ -226,20 +241,22 @@ export default function RequestForm() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Pin Code and Mobile */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block mb-1 font-medium">
-                    Pin Code(C) <span className="text-[#cc0000]">*</span>
+                  <label className="block mb-2 font-semibold text-gray-700 flex items-center">
+                    <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                    Pin Code(C) <span className="text-red-500 ml-1">*</span>
                   </label>
                   <input
                     type="text"
                     name="pinCode"
                     value={formData.pinCode}
                     onChange={handleChange}
-                    className={`w-full p-2 border ${errors.pinCode ? "border-[#cc0000]" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[#0066a1]`}
+                    className={`w-full p-3 border ${errors.pinCode ? "border-red-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
                   />
                   {errors.pinCode && (
-                    <p className="text-[#cc0000] text-sm mt-1 flex items-center">
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
                       <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.pinCode}
                     </p>
@@ -247,18 +264,19 @@ export default function RequestForm() {
                 </div>
 
                 <div>
-                  <label className="block mb-1 font-medium">
-                    Register Mobile <span className="text-[#cc0000]">*</span>
+                  <label className="block mb-2 font-semibold text-gray-700 flex items-center">
+                    <Phone className="w-5 h-5 mr-2 text-blue-600" />
+                    Register Mobile <span className="text-red-500 ml-1">*</span>
                   </label>
                   <input
                     type="text"
                     name="mobile"
                     value={formData.mobile}
                     onChange={handleChange}
-                    className={`w-full p-2 border ${errors.mobile ? "border-[#cc0000]" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[#0066a1]`}
+                    className={`w-full p-3 border ${errors.mobile ? "border-red-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
                   />
                   {errors.mobile && (
-                    <p className="text-[#cc0000] text-sm mt-1 flex items-center">
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
                       <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.mobile}
                     </p>
@@ -266,19 +284,21 @@ export default function RequestForm() {
                 </div>
               </div>
 
+              {/* Email */}
               <div>
-                <label className="block mb-1 font-medium">
-                  Register Email Id <span className="text-[#cc0000]">*</span>
+                <label className="block mb-2 font-semibold text-gray-700 flex items-center">
+                  <Mail className="w-5 h-5 mr-2 text-blue-600" />
+                  Register Email Id <span className="text-red-500 ml-1">*</span>
                 </label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full p-2 border ${errors.email ? "border-[#cc0000]" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[#0066a1]`}
+                  className={`w-full p-3 border ${errors.email ? "border-red-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
                 />
                 {errors.email && (
-                  <p className="text-[#cc0000] text-sm mt-1 flex items-center">
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.email}
                   </p>
@@ -288,7 +308,7 @@ export default function RequestForm() {
           </div>
 
           {/* Form Actions */}
-          <div className="px-6 pb-6 flex justify-end gap-3">
+          <div className="px-6 pb-6 flex justify-end gap-4">
             <button
               type="button"
               onClick={() => {
@@ -304,13 +324,13 @@ export default function RequestForm() {
                 })
                 setErrors({})
               }}
-              className="px-5 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
             >
               Reset
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-[#0066a1] text-white rounded-md hover:bg-[#00558c] transition-colors"
+              className="px-6 py-3 bg-blue-800 text-white rounded-lg hover:bg-blue-900 transition-colors shadow-md"
             >
               Submit Request
             </button>
@@ -320,4 +340,3 @@ export default function RequestForm() {
     </div>
   )
 }
-

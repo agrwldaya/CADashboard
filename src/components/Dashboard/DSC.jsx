@@ -75,6 +75,8 @@ const DscManager = () => {
   const [showExpiryPopup, setShowExpiryPopup] = useState(false)
   const [expiryMessages, setExpiryMessages] = useState([])
   const [selectedRecords, setSelectedRecords] = useState([])
+  // New state for export popup
+  const [showExportPopup, setShowExportPopup] = useState(false)
 
   const [showForm, setShowForm] = useState(false)
   const [selectedColumns, setSelectedColumns] = useState(columns.map((col) => col.name))
@@ -125,20 +127,49 @@ const DscManager = () => {
     }
   }
 
-  const handleExport = () => {
-    const dataToExport =
-      selectedRecords.length > 0 ? dscData.filter((_, index) => selectedRecords.includes(index)) : dscData
+  // Modified export function to handle different export types
+  const handleExport = (exportType = "all") => {
+    setShowExportPopup(false)
+
+    const today = new Date()
+    let dataToExport = []
+
+    if (selectedRecords.length > 0) {
+      // If records are selected, only export those
+      dataToExport = dscData.filter((_, index) => selectedRecords.includes(index))
+    } else {
+      // Otherwise filter based on export type
+      switch (exportType) {
+        case "expired":
+          dataToExport = dscData.filter((record) => {
+            const expiryDate = new Date(record["Expiry Date"])
+            return expiryDate < today
+          })
+          break
+        case "expiring":
+          dataToExport = dscData.filter((record) => {
+            const expiryDate = new Date(record["Expiry Date"])
+            const diffTime = expiryDate - today
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+            return diffDays > 0 && diffDays <= 30 // Expiring in next 30 days
+          })
+          break
+        case "all":
+        default:
+          dataToExport = dscData
+          break
+      }
+    }
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport)
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, "DSC")
-    XLSX.writeFile(workbook, "DSC.xlsx")
+    XLSX.writeFile(workbook, `DSC_${exportType}.xlsx`)
   }
 
   const handleSaveChanges = async () => {
     setIsLoading(true)
     try {
-       
       setHasChanges(false)
     } catch (error) {
       console.error("Error saving data:", error)
@@ -303,12 +334,12 @@ const DscManager = () => {
               Import
             </label>
             <button
-              onClick={handleExport}
+              onClick={() => setShowExportPopup(true)}
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center"
               disabled={isLoading}
             >
               <Upload size={16} className="mr-2" />
-              {selectedRecords.length > 0 ? "Export Selected" : "Export All"}
+              {selectedRecords.length > 0 ? "Export Selected" : "Export"}
             </button>
 
             {/* Settings Button */}
@@ -397,6 +428,47 @@ const DscManager = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Export Options Popup */}
+      {showExportPopup && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[300px]">
+            <h2 className="text-xl font-bold mb-4">Export Options</h2>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => handleExport("expired")}
+                className="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200"
+              >
+                Export Expired
+              </button>
+
+              <button
+                onClick={() => handleExport("expiring")}
+                className="w-full bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors duration-200"
+              >
+                Export Expiring
+              </button>
+
+              <button
+                onClick={() => handleExport("all")}
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200"
+              >
+                Export All
+              </button>
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowExportPopup(false)}
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Settings Modal for Column Selection */}
       {showForm && (
