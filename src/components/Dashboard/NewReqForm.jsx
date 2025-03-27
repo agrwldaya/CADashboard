@@ -16,6 +16,16 @@ export default function RequestForm() {
     email: "",
   })
 
+  //states
+  const states = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+    "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+    "Meghalaya", "Mizoram", "Odisha", "Punjab", "Rajasthan",
+    "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+    "Uttar Pradesh", "Uttarakhand", "West Bengal"
+  ];
+
   // Validation state
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
@@ -201,11 +211,11 @@ export default function RequestForm() {
                     className={`w-full p-2 border ${errors.state ? "border-[#cc0000]" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[#0066a1] h-[42px]`}
                   >
                     <option value="">-Select-</option>
-                    <option value="AL">Alabama</option>
-                    <option value="AK">Alaska</option>
-                    <option value="AZ">Arizona</option>
-                    <option value="AR">Arkansas</option>
-                    {/* Add more states as needed */}
+                    {states.map((state) => (
+                      <option key={state} value={state}>
+                        {state}
+                      </option>
+                    ))}
                   </select>
                   {errors.state && (
                     <p className="text-[#cc0000] text-sm mt-1 flex items-center">
