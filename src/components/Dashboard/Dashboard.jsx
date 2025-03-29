@@ -68,9 +68,8 @@ const Dashboard = () => {
 
   const ClientDetailsCard = () => {
     return (
-      <div className="gap-4 bg-gray-700 p-2 rounded-sm">
+      <div className="gap-4  rounded-sm">
         <div className="flex justify-between items-center ">
-          <h3 className="text-xl font-bold text-blue-300">Client Profile</h3>
         </div>
         <div className="space-y-1">
           <p className="text-sm text-white"><span className="font-semibold text-blue-200">Name:</span> Ajay Kumar</p>
